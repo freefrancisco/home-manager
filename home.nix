@@ -21,13 +21,23 @@
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
-    pkgs.python312
+    pkgs.haskellPackages.haskell-language-server
+    pkgs.haskellPackages.ghcid
+    pkgs.haskellPackages.ghc
+    pkgs.haskellPackages.cabal-install
+    pkgs.haskellPackages.stack
+    pkgs.julia-bin #works but path needs to be set to override juliaup installation
 
-    # doesn't work
+    pkgs.python312
+    pkgs.R
+
+
+    # list of pkgs I've tried and didn't work
+    # pkgs.python
     # pkgs.python312Packages.conda
     # pkgs.julia
+    # pkgs.haskellPackages.ghcup
 
-    pkgs.julia-bin #works but path needs to be set to override juliaup installation
 
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
@@ -77,6 +87,8 @@
   #
   home.sessionVariables = {
     # EDITOR = "emacs";
+    EDITOR = "codium";
+    TERMINAL = "rio";
   };
 
   # Let Home Manager install and manage itself.
@@ -92,7 +104,7 @@
   };
 
   # git
-   programs.git = {
+  programs.git = {
     enable = true;
     userName = "Francisco Gutierrez";
     userEmail = "97089+freefrancisco@users.noreply.github.com";
@@ -111,12 +123,7 @@
     enable = true;
     package = pkgs.vscodium;
     extensions = with pkgs.vscode-extensions; [
-
-      # the ones andy had in his home.nix
-
       arrterian.nix-env-selector
-      # dart-code.dart-code
-      # dart-code.flutter
       haskell.haskell
       jnoortheen.nix-ide
       justusadam.language-haskell
@@ -124,62 +131,64 @@
       ms-python.python
       ms-toolsai.jupyter
       rust-lang.rust-analyzer
-      # scala-lang.scala
       tamasfe.even-better-toml
+      denoland.vscode-deno
+      dhall.dhall-lang
+      julialang.language-julia
+      mgt19937.typst-preview
+      nvarner.typst-lsp
 
-      # the ones I had in my manually installed vscode minus repeats
+      ### these three don't work
 
-      # # bbenoist.nix
-      # # be5invis.toml
-      # denoland.vscode-deno
-      # dhall.dhall-lang
-      # # digitalassetholdingsllc.daml
-      # # formulahendry.code-runner
-      # # github.codespaces
-      # # github.vscode-github-actions
-      # # gruntfuggly.todo-tree
-      # julialang.language-julia
-      # # marp-team.marp-vscode
-      # # mechatroner.rainbow-csv
-      # # mgt19937.typst-preview
-      # # ms-azuretools.vscode-docker
-      # # ms-kubernetes-tools.vscode-kubernetes-tools
-      # # ms-python.debugpy
-      # # ms-python.isort
-      # # ms-python.python
-      # # ms-python.vscode-pylance
-      # # ms-toolsai.jupyter
-      # # ms-toolsai.jupyter-keymap
-      # # ms-toolsai.jupyter-renderers
-      # # ms-toolsai.vscode-jupyter-cell-tags
-      # # ms-toolsai.vscode-jupyter-slideshow
-      # # ms-vscode-remote.remote-containers
-      # # ms-vscode.cmake-tools
-      # # ms-vscode.cpptools
-      # # ms-vscode.cpptools-extension-pack
-      # # ms-vscode.cpptools-themes
-      # # ms-vscode.makefile-tools
-      # # nickdemayo.vscode-json-editor
-      # # nvarner.typst-lsp
-      # # nwolverson.ide-purescript
+      # nwolverson.ide-purescript
       # nwolverson.language-purescript
-      # # redhat.vscode-yaml
-      # # ronnidc.nunjucks
-      # # rubymaniac.vscode-direnv
       # s0kil.vscode-hsx
-      # # sastan.twind-intellisense
-      # # searking.preview-vscode
-      # # tomoki1207.pdf
-      # # twxs.cmake
-      # # unifiedjs.vscode-mdx
-      # # vue.volar
-      # # whitphx.vscode-stlite
+
+      ### haven't tried these yet from vscode 
+
+      # bbenoist.nix
+      # be5invis.toml
+      # digitalassetholdingsllc.daml
+      # formulahendry.code-runner
+      # github.codespaces
+      # github.vscode-github-actions
+      # gruntfuggly.todo-tree
+      # marp-team.marp-vscode
+      # mechatroner.rainbow-csv
+      # ms-azuretools.vscode-docker
+      # ms-kubernetes-tools.vscode-kubernetes-tools
+      # ms-python.debugpy
+      # ms-python.isort
+      # ms-python.python
+      # ms-python.vscode-pylance
+      # ms-toolsai.jupyter-keymap
+      # ms-toolsai.jupyter-renderers
+      # ms-toolsai.vscode-jupyter-cell-tags
+      # ms-toolsai.vscode-jupyter-slideshow
+      # ms-vscode-remote.remote-containers
+      # ms-vscode.cmake-tools
+      # ms-vscode.cpptools
+      # ms-vscode.cpptools-extension-pack
+      # ms-vscode.cpptools-themes
+      # ms-vscode.makefile-tools
+      # nickdemayo.vscode-json-editor
+      # redhat.vscode-yaml
+      # ronnidc.nunjucks
+      # rubymaniac.vscode-direnv
+      # sastan.twind-intellisense
+      # searking.preview-vscode
+      # tomoki1207.pdf
+      # twxs.cmake
+      # unifiedjs.vscode-mdx
+      # vue.volar
+      # whitphx.vscode-stlite
 
     ];
   };
 
-  #fish shell
-programs.fish = {
+  #shells, bash and fish
+  programs.bash.enable = true;
+  programs.fish = {
     enable = true;
 
     # loginShellInit = ''
@@ -234,9 +243,39 @@ programs.fish = {
     # ];
   };
 
+  # terminal, rio
+  programs.rio = {
+    enable = true;
+    settings = {
+      window = {
+        background-opacity = 0.6;
+        blur = true;
+        height = 720;
+        width = 1280;
+      };
+      shell = {
+        program = "fish";
+        args = [ ];
+      };
+    };
+  };
+
 
   #others
   programs.htop.enable = true;
+
+  programs.bat.enable = true;
+  programs.ripgrep.enable = true;
+  programs.eza = {
+    enable = true;
+    enableBashIntegration = true;
+    enableFishIntegration = true;
+  };
+
+  programs.emacs = {
+    enable = true;
+    extraPackages = epkgs: [ epkgs.nix-mode epkgs.magit ];
+  };
 
 
 }
