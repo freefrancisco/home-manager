@@ -1,5 +1,22 @@
 { config, pkgs, ... }:
 
+# had to do a let in to deal with conda which can't be installed by nix yet
+let 
+  #conda stuff
+  condaBase = "/opt/homebrew/Caskroom/miniconda/base";
+  
+  
+  #mojo stuff
+
+  modularHome = "${config.home.homeDirectory}/.modular";
+  mojoPath = "${modularHome}/pkg/packages.modular.com_mojo/bin";
+
+  #rust stuff
+
+  cargoHome ="${config.home.homeDirectory}/.cargo";
+  cargoPath ="${cargoHome}/bin";
+
+in 
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -26,10 +43,25 @@
     pkgs.haskellPackages.ghc
     pkgs.haskellPackages.cabal-install
     pkgs.haskellPackages.stack
+    pkgs.ihp-new
+
+    pkgs.cachix
+
     pkgs.julia-bin #works but path needs to be set to override juliaup installation
 
-    pkgs.python312
+    # this works, but interferes with conda's python
+    # pkgs.python312
+
+    pkgs.nodePackages_latest.nodejs
+    # pkgs.nodePackages_latest.npm
+
     pkgs.R
+    pkgs.elixir
+    # deno's version is better directly with cargo
+    # pkgs.deno
+    #pandoc requires texlive, the full version gives me all the math and geometry latex stuff
+    pkgs.pandoc
+    pkgs.texlive.combined.scheme-full
 
 
     # list of pkgs I've tried and didn't work
@@ -37,6 +69,12 @@
     # pkgs.python312Packages.conda
     # pkgs.julia
     # pkgs.haskellPackages.ghcup
+    # pkgs.rstudio
+
+    #try brew and rust
+    # pkgs.homebrew
+    # pkgs.rustup
+    
 
 
 
@@ -89,6 +127,13 @@
     # EDITOR = "emacs";
     EDITOR = "codium";
     TERMINAL = "rio";
+    SHELL = "fish";
+    # mojo stuff
+    MODULAR_HOME = modularHome;
+
+    # this should be last
+    # prepend the home manager binaries to the path so it prefers programs installed here over brew or native
+    PATH = "${config.home.profileDirectory}/bin:${cargoPath}:${mojoPath}:$PATH";
   };
 
   # Let Home Manager install and manage itself.
@@ -122,14 +167,19 @@
   programs.vscode = {
     enable = true;
     package = pkgs.vscodium;
+
     extensions = with pkgs.vscode-extensions; [
       arrterian.nix-env-selector
-      haskell.haskell
+      bbenoist.nix
       jnoortheen.nix-ide
+
+      haskell.haskell
       justusadam.language-haskell
       mkhl.direnv
+
       ms-python.python
       ms-toolsai.jupyter
+
       rust-lang.rust-analyzer
       tamasfe.even-better-toml
       denoland.vscode-deno
@@ -137,6 +187,12 @@
       julialang.language-julia
       mgt19937.typst-preview
       nvarner.typst-lsp
+
+      humao.rest-client
+
+      # hsx, need to install manually for now
+      # s0kil.vscode-hsx
+      
 
       ### these three don't work
 
@@ -146,13 +202,12 @@
 
       ### haven't tried these yet from vscode 
 
-      # bbenoist.nix
       # be5invis.toml
       # digitalassetholdingsllc.daml
       # formulahendry.code-runner
       # github.codespaces
       # github.vscode-github-actions
-      # gruntfuggly.todo-tree
+      gruntfuggly.todo-tree
       # marp-team.marp-vscode
       # mechatroner.rainbow-csv
       # ms-azuretools.vscode-docker
@@ -188,59 +243,20 @@
 
   #shells, bash and fish
   programs.bash.enable = true;
-  programs.fish = {
+  programs.zsh = {
     enable = true;
 
-    # loginShellInit = ''
-    #   # Set up Conda environment
-    #   set -gx CONDA_EXE ${config.programs.conda.bin}/conda
-    #   set -gx CONDA_PREFIX ${config.programs.conda.prefix}/envs/myenv
-    #   set -gx PATH $CONDA_PREFIX/bin $PATH
-    #   eval ($CONDA_EXE shell.fish hook)
-    # '';
-
-    # loginShellInit = ''
-    #   # Set PATH if needed, example:
-    #   # set -gx PATH $HOME/.local/bin $PATH
-    # '';
-
-    # interactiveShellInit = ''
-    #   # Aliases and functions
-    #   alias ll='ls -lah'
-    #   alias df='df -h'
-    #   function mkcd
-    #     mkdir -p $argv
-    #     cd $argv
-    #   end
-    # '';
-
-    # # Add universal variables
-    # variables = {
-    #   EDITOR = "vim"; # or your preferred editor
-    # };
-
-    # # Integrating with nix
-    # shellInit = ''
-    #   # Source the Nix-generated config files
-    #   source $HOME/.nix-profile/etc/fish/nixos-env-preinit.fish
-    # '';
-
-    # # Prompt configuration using `starship` if installed
-    # promptInit = ''
-    #   starship init fish | source
-    # '';
-
-    # # Additional plugins you might want
-    # plugins = [
-    #   {
-    #     name = "bass";
-    #     src = pkgs.fishPlugins.bass;
-    #   }
-    #   {
-    #     name = "fzf";
-    #     src = pkgs.fishPlugins.fzf;
-    #   }
-    # ];
+  };
+  programs.fish = {
+    enable = true;
+    # conda needs this
+    shellInit = ''
+      if test -f "${condaBase}/etc/fish/conf.d/conda.fish"
+        source "${condaBase}/etc/fish/conf.d/conda.fish"
+      else
+        set -gx PATH "${condaBase}/bin" $PATH
+      end
+    '';
   };
 
   # terminal, rio
@@ -248,8 +264,8 @@
     enable = true;
     settings = {
       window = {
-        background-opacity = 0.6;
-        blur = true;
+        # background-opacity = 0.6;
+        # blur = true;
         height = 720;
         width = 1280;
       };
@@ -276,6 +292,7 @@
     enable = true;
     extraPackages = epkgs: [ epkgs.nix-mode epkgs.magit ];
   };
+
 
 
 }
