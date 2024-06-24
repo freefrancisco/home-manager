@@ -1,6 +1,10 @@
-# Setting up my environment in a new machine
+# Home Manager
+A nix took that manages my setup so I can use it in a new machine instead of having to copy a bunch of dot files and configuration. Here is the [Documentation](https://nix-community.github.io/home-manager/) and here is the [Github Repo](https://github.com/nix-community/home-manager). 
 
-First install nix using the determinate systems installer [here]( https://github.com/DeterminateSystems/nix-installer) or [ https://github.com/DeterminateSystems/nix-installer](here)
+
+## Setting up my environment in a new machine
+
+First install nix using the determinate systems installer [here]( https://github.com/DeterminateSystems/nix-installer)
 
 then clone this repo anywhere in the new machine, and cd into the new folder. Once you are in the folder run `nix run .#homeConfigurations.fg.switch` that will create the correct folders for the user fg and the correct .confg/home-manager/ directory for these files and run home-manager for the first time. After this you can get rid of the cloned directory, home manager is in the computer and it's running from the correct directory. You can edit the home.nix there to make changes and run home manager with `home-manager switch`. 
 
