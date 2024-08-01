@@ -2,8 +2,12 @@
 
 # had to do a let in to deal with conda which can't be installed by nix yet
 let 
+  #homebrew stuff
+  homebrewBase = "/opt/homebrew";
+  homebrewPath = "${homebrewBase}/bin";
+
   #conda stuff
-  condaBase = "/opt/homebrew/Caskroom/miniconda/base";
+  condaBase = "${homebrewBase}/Caskroom/miniconda/base";
   
   
   #mojo stuff
@@ -130,10 +134,14 @@ in
     SHELL = "fish";
     # mojo stuff
     MODULAR_HOME = modularHome;
+    # Homewbrew stuff
+    HOMEBREW_PREFIX="${homebrewBase}";
+    HOMEBREW_CELLAR="${homebrewBase}/Cellar";
+    HOMEBREW_REPOSITORY="${homebrewBase}";
 
     # this should be last
     # prepend the home manager binaries to the path so it prefers programs installed here over brew or native
-    PATH = "${config.home.profileDirectory}/bin:${cargoPath}:${mojoPath}:$PATH";
+    PATH = "${config.home.profileDirectory}/bin:${cargoPath}:${mojoPath}:${homebrewPath}:$PATH";
   };
 
   # Let Home Manager install and manage itself.
