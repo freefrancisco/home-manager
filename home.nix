@@ -4,7 +4,7 @@
 let 
   #homebrew stuff
   homebrewBase = "/opt/homebrew";
-  homebrewPath = "${homebrewBase}/bin";
+  homebrewPath = "${homebrewBase}/bin:${homebrewBase}/sbin";
 
   #conda stuff
   condaBase = "${homebrewBase}/Caskroom/miniconda/base";
@@ -39,6 +39,7 @@ in
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = [
+    pkgs.tree
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -78,6 +79,9 @@ in
     #try brew and rust
     # pkgs.homebrew
     # pkgs.rustup
+
+    #other miscellaneous useeful things
+    pkgs.sshpass
     
 
 
@@ -131,7 +135,7 @@ in
     # EDITOR = "emacs";
     EDITOR = "codium";
     TERMINAL = "rio";
-    SHELL = "fish";
+    # SHELL = "fish";
     # mojo stuff
     MODULAR_HOME = modularHome;
     # Homewbrew stuff
@@ -193,7 +197,8 @@ in
       denoland.vscode-deno
       dhall.dhall-lang
       julialang.language-julia
-      mgt19937.typst-preview
+      #   error: The features of 'typst-preview' have been consolidated to 'tinymist', an all-in-one language server for typst
+      # mgt19937.typst-preview
       nvarner.typst-lsp
 
       humao.rest-client
@@ -251,19 +256,33 @@ in
 
   #shells, bash and fish
   programs.bash.enable = true;
+
   programs.zsh = {
     enable = true;
+    initExtra = ''
+      # Conda initialization for zsh
+      if [ -f "${condaBase}/etc/profile.d/conda.sh" ]; then
+        source "${condaBase}/etc/profile.d/conda.sh"
+      else
+        export PATH="${condaBase}/bin:$PATH"
+      fi
+      # Homebrew initialization
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    '';    
 
   };
   programs.fish = {
     enable = true;
     # conda needs this
     shellInit = ''
+      # Conda initialization
       if test -f "${condaBase}/etc/fish/conf.d/conda.fish"
         source "${condaBase}/etc/fish/conf.d/conda.fish"
       else
         set -gx PATH "${condaBase}/bin" $PATH
       end
+      # Homebrew initialization
+      eval "$(/opt/homebrew/bin/brew shellenv)"
     '';
   };
 
