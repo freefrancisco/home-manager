@@ -1,19 +1,39 @@
 { config, pkgs, ... }:
 let
+  ### All packages installed in computer
   homePackagesList = binaryPackagesList ++ haskellPackagesList ++ nodePackagesList;
-
+  
+  ### Haskell related packages
   haskellPackagesList = with pkgs.haskellPackages; [
     haskell-language-server
     ghcid
-    ghc
+    # ghc
+    myGhc #instead of ghc alone
     cabal-install
     stack
   ];
+  # custom ghc for haskell development
+  myGhc = pkgs.haskellPackages.ghcWithPackages myGhcDevelopmentLibraries;
+  # haskell development libraries
+  myGhcDevelopmentLibraries = ps: with ps; [
+    wai
+    servant-server
+    servant
+    hspec
+    hmatrix
+    free
+    unordered-containers
+    warp
+    servius #barebones warp server from command line, port 3000
+    witch
+  ];
 
+  ### Node related packages
   nodePackagesList = with pkgs.nodePackages_latest; [
     nodejs
   ];
 
+  ### Binary Unix packages 
   binaryPackagesList = with pkgs; [
     tree
     sshpass
@@ -182,7 +202,7 @@ programs.vscode = {
   enable = true;
   package = pkgs.vscodium;
   extensions = with pkgs.vscode-extensions; [
-      vscodevim.vim
+      # vscodevim.vim
       arrterian.nix-env-selector
       bbenoist.nix
       jnoortheen.nix-ide
@@ -200,6 +220,7 @@ programs.vscode = {
       dhall.dhall-lang
       julialang.language-julia
       # #   error: The features of 'typst-preview' have been consolidated to 'tinymist', an all-in-one language server for typst
+      myriad-dreamin.tinymist
       # # mgt19937.typst-preview
       # nvarner.typst-lsp
 
