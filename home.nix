@@ -11,6 +11,8 @@ let
     myGhc #instead of ghc alone
     cabal-install
     stack
+    cairo #used by ihaskell
+    retrie # used by language server plugin
   ];
   # custom ghc for haskell development
   myGhc = pkgs.haskellPackages.ghcWithPackages myGhcDevelopmentLibraries;
@@ -19,12 +21,16 @@ let
     wai
     servant-server
     servant
+    mtl
+    parsec
+    cassava
     hspec
     hmatrix
     free
     unordered-containers
     warp
     servius #barebones warp server from command line, port 3000
+    math-functions
     witch
   ];
 
