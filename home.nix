@@ -174,10 +174,20 @@ in
   #
   #  /etc/profiles/per-user/fg/etc/profile.d/hm-session-vars.sh
   #
+
+  home.sessionPath = [
+    "${config.home.profileDirectory}/bin"
+    "${cargoPath}"
+    "${denoPath}"
+    "${pnpmPath}"
+    "${mojoPath}"
+    "${homebrewPath}"
+  ];
+
   home.sessionVariables = {
     # EDITOR = "emacs";
     EDITOR = "codium";
-    TERMINAL = "rio";
+    # TERMINAL = "rio";
     # SHELL = "fish";
 
     # mojo stuff
@@ -187,10 +197,6 @@ in
     HOMEBREW_PREFIX="${homebrewBase}";
     HOMEBREW_CELLAR="${homebrewBase}/Cellar";
     HOMEBREW_REPOSITORY="${homebrewBase}";
-
-    # this should be last
-    # prepend the home manager binaries to the path so it prefers programs installed here over brew or native
-    PATH = "${config.home.profileDirectory}/bin:${cargoPath}:${denoPath}:${pnpmPath}:${mojoPath}:${homebrewPath}:$PATH";
   };
 
   # Let Home Manager install and manage itself.
@@ -224,7 +230,7 @@ in
 programs.vscode = {
   enable = true;
   package = pkgs.vscodium;
-  extensions = with pkgs.vscode-extensions; [
+  profiles.default.extensions = with pkgs.vscode-extensions; [
       # vscodevim.vim
       arrterian.nix-env-selector
       bbenoist.nix
@@ -305,7 +311,7 @@ programs.vscode = {
 
   programs.zsh = {
     enable = true;
-    initExtra = ''
+    initContent = ''
       # Conda initialization for zsh
       if [ -f "${condaBase}/etc/profile.d/conda.sh" ]; then
         source "${condaBase}/etc/profile.d/conda.sh"
