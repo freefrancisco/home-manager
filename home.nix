@@ -2,7 +2,7 @@
 let
   ### All packages installed in computer
   homePackagesList = binaryPackagesList ++ haskellPackagesList ++ nodePackagesList;
-  
+
   ### Haskell related packages
   haskellPackagesList = with pkgs.haskellPackages; [
     haskell-language-server
@@ -39,7 +39,7 @@ let
     nodejs
   ];
 
-  ### Binary Unix packages 
+  ### Binary Unix packages
   binaryPackagesList = with pkgs; [
     tree
     sshpass
@@ -53,6 +53,17 @@ let
     #pandoc related. Pandoc requires texlive, the full version gives me all the math and geometry latex stuff
     pandoc
     texlive.combined.scheme-full
+    jinja2-cli
+    git
+    git-filter-repo
+
+    #yaml and json tools
+    jq # tool to query json
+    # yq wraps around jq to do yaml, the go version is better
+    yq-go #yq-go is the golang version, yq is the python version, they have different syntaxes
+
+    # front end stuff, a better npm also includes pnpx
+    pnpm
 
     ### experiments that failed
     # # this works, but interferes with conda's python
@@ -102,9 +113,12 @@ let
   mojoPath = "${modularHome}/pkg/packages.modular.com_mojo/bin";
 
   #rust stuff
-  cargoHome ="${config.home.homeDirectory}/.cargo";
-  cargoPath ="${cargoHome}/bin";
+  cargoHome = "${config.home.homeDirectory}/.cargo";
+  cargoPath = "${cargoHome}/bin";
 
+  #deno stuff
+  denoHome = "${config.home.homeDirectory}/.deno";
+  denoPath = "${denoHome}/bin";
 
 in
 {
@@ -165,7 +179,7 @@ in
 
     # mojo stuff
     MODULAR_HOME = modularHome;
-    
+
     # Homewbrew stuff
     HOMEBREW_PREFIX="${homebrewBase}";
     HOMEBREW_CELLAR="${homebrewBase}/Cellar";
@@ -173,7 +187,7 @@ in
 
     # this should be last
     # prepend the home manager binaries to the path so it prefers programs installed here over brew or native
-    PATH = "${config.home.profileDirectory}/bin:${cargoPath}:${mojoPath}:${homebrewPath}:$PATH";
+    PATH = "${config.home.profileDirectory}/bin:${cargoPath}:${denoPath}:${mojoPath}:${homebrewPath}:$PATH";
   };
 
   # Let Home Manager install and manage itself.
@@ -300,7 +314,7 @@ programs.vscode = {
     '';
 
   };
-  
+
   programs.fish = {
     enable = true;
     # conda needs this
