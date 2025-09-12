@@ -120,6 +120,9 @@ let
   denoHome = "${config.home.homeDirectory}/.deno";
   denoPath = "${denoHome}/bin";
 
+  #pnpm stuff
+  pnpmPath = "${config.home.homeDirectory}/Library/pnpm";
+
 in
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -187,7 +190,7 @@ in
 
     # this should be last
     # prepend the home manager binaries to the path so it prefers programs installed here over brew or native
-    PATH = "${config.home.profileDirectory}/bin:${cargoPath}:${denoPath}:${mojoPath}:${homebrewPath}:$PATH";
+    PATH = "${config.home.profileDirectory}/bin:${cargoPath}:${denoPath}:${pnpmPath}:${mojoPath}:${homebrewPath}:$PATH";
   };
 
   # Let Home Manager install and manage itself.
