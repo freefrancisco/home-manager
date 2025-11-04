@@ -43,8 +43,21 @@ let
   binaryPackagesList = with pkgs; [
     tree
     sshpass
+    #servers and related
+    caddy
     # programming and data science
+    # seems that lean and elan don't work from home manager need to install separately outside of this
+    # elan
+    # lean4 #don't use with elan at the same time, one or the other, not both
+
+    micromamba #lightweight conda alternative
+
+    # R related
     R
+    rPackages.tidyverse
+    rPackages.languageserver
+    rstudio
+
     julia-bin #works but path needs to be set to override juliaup installation
     elixir
     # haskell related
@@ -64,6 +77,11 @@ let
 
     # front end stuff, a better npm also includes pnpx
     pnpm
+
+    # purescript stuff, might need to go if I can't get it to work properly
+    # purescript
+    # spago
+
 
     ### experiments that failed
     # # this works, but interferes with conda's python
@@ -116,12 +134,17 @@ let
   cargoHome = "${config.home.homeDirectory}/.cargo";
   cargoPath = "${cargoHome}/bin";
 
+  #lean stuff
+  elanHome = "${config.home.homeDirectory}/.elan";
+  elanPath = "${elanHome}/bin";
+
   #deno stuff
   denoHome = "${config.home.homeDirectory}/.deno";
   denoPath = "${denoHome}/bin";
 
   #pnpm stuff
   pnpmPath = "${config.home.homeDirectory}/Library/pnpm";
+
 
 in
 {
@@ -178,6 +201,7 @@ in
   home.sessionPath = [
     "${config.home.profileDirectory}/bin"
     "${cargoPath}"
+    "${elanPath}"
     "${denoPath}"
     "${pnpmPath}"
     "${mojoPath}"
