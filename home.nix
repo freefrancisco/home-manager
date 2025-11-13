@@ -43,10 +43,13 @@ let
   binaryPackagesList = with pkgs; [
     tree
     sshpass
+
     #servers and related
     caddy
+
     # programming and data science
     # seems that lean and elan don't work from home manager need to install separately outside of this
+    # so commenting both out permanently for now
     # elan
     # lean4 #don't use with elan at the same time, one or the other, not both
 
@@ -60,13 +63,17 @@ let
 
     julia-bin #works but path needs to be set to override juliaup installation
     elixir
+
     # haskell related
     ihp-new
     cachix
+
     #pandoc related. Pandoc requires texlive, the full version gives me all the math and geometry latex stuff
     pandoc
     texlive.combined.scheme-full
     jinja2-cli
+
+    # git of course
     git
     git-filter-repo
 
@@ -209,10 +216,12 @@ in
   ];
 
   home.sessionVariables = {
+    # R_LIBS_USER = "${pkgs.rPackages}/library";
+    # R_LIBS_SITE = "${pkgs.rPackages}/library";
     # EDITOR = "emacs";
     EDITOR = "codium";
-    # TERMINAL = "rio";
-    # SHELL = "fish";
+    TERMINAL = "rio";
+    SHELL = "zsh";
 
     # mojo stuff
     MODULAR_HOME = modularHome;
@@ -335,6 +344,13 @@ programs.vscode = {
 
   programs.zsh = {
     enable = true;
+    enableCompletion = true;
+
+    # fish-like goodies
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    historySubstringSearch.enable = true;
+
     initContent = ''
       # Conda initialization for zsh
       if [ -f "${condaBase}/etc/profile.d/conda.sh" ]; then
@@ -346,22 +362,36 @@ programs.vscode = {
       eval "$(/opt/homebrew/bin/brew shellenv)"
     '';
 
+    shellAliases = {
+      # better ls
+      ll = "eza -al";
+      la = "eza -a";
+      l = "eza";
+      # home manager shortcuts
+      hm = "home-manager switch --flake ~/.config/home-manager#fg";
+      hmu = " nix flake update && home-manager switch --flake ~/.config/home-manager#fg";
+    };
+
   };
 
-  programs.fish = {
-    enable = true;
-    # conda needs this
-    shellInit = ''
-      # Conda initialization
-      if test -f "${condaBase}/etc/fish/conf.d/conda.fish"
-        source "${condaBase}/etc/fish/conf.d/conda.fish"
-      else
-        set -gx PATH "${condaBase}/bin" $PATH
-      end
-      # Homebrew initialization
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    '';
-  };
+# better ls
+programs.eza = {
+  enable = true;
+  enableBashIntegration = true;
+};
+
+# nice prompt for zsh
+  programs.starship = {
+  enable = true;
+  enableZshIntegration = true;
+};
+
+# fuzzy finder fzf
+programs.fzf = {
+  enable = true;
+  enableZshIntegration = true;
+};
+
 
   # terminal, rio
   programs.rio = {
@@ -374,7 +404,7 @@ programs.vscode = {
         width = 1280;
       };
       shell = {
-        program = "fish";
+        program = "zsh";
         args = [ ];
       };
     };
@@ -386,11 +416,6 @@ programs.vscode = {
 
   programs.bat.enable = true;
   programs.ripgrep.enable = true;
-  programs.eza = {
-    enable = true;
-    enableBashIntegration = true;
-    enableFishIntegration = true;
-  };
 
   programs.emacs = {
     enable = true;
