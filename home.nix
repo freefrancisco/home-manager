@@ -64,6 +64,9 @@ let
     julia-bin #works but path needs to be set to override juliaup installation
     elixir
 
+    # bqn language, similar to J and APL
+    cbqn
+
     # haskell related
     ihp-new
     cachix
