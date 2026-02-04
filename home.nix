@@ -15,8 +15,7 @@ let
     ihp-new
     cachix
 
-    # rust related
-    rust-analyzer
+    # rust and deno not here, use cargo and deno installers
 
     # python related
     pixi # better conda
@@ -27,6 +26,7 @@ let
     rPackages.languageserver
     rstudio
 
+    # TODO maybe remove julia and use juliaup instead
     #julia related
     julia-bin #works but path needs to be set to override juliaup installation
 
@@ -127,6 +127,8 @@ let
   #pnpm stuff
   pnpmPath = "${config.home.homeDirectory}/Library/pnpm";
 
+  # things that must be before Apple's default paths, right now nix and homebrew
+  highPriorityPath = "${config.home.profileDirectory}/bin:${homebrewPath}";
 
 in
 {
@@ -141,6 +143,8 @@ in
   # manage.
   home.username = "fg";
   home.homeDirectory = "/Users/fg";
+
+  # Things I want in path but I don't care about priority, let Apple go first if it wants
   home.sessionPath = [
     "${config.home.profileDirectory}/bin"
     "${cargoPath}"
@@ -334,17 +338,10 @@ programs.vscode = {
     syntaxHighlighting.enable = true;
     historySubstringSearch.enable = true;
 
-    # TODO remove Conda stuff after I make sure I don't need it anymore
-    # initContent = ''
-    #   # Conda initialization for zsh
-    #   if [ -f "${condaBase}/etc/profile.d/conda.sh" ]; then
-    #     source "${condaBase}/etc/profile.d/conda.sh"
-    #   else
-    #     export PATH="${condaBase}/bin:$PATH"
-    #   fi
-    #   # Homebrew initialization
-    #   eval "$(/opt/homebrew/bin/brew shellenv)"
-    # '';
+    # Important! This is the only way to make my high priority path come before Apple's bullshit
+    profileExtra = ''
+      export PATH="${highPriorityPath}:$PATH"
+    '';
 
     shellAliases = {
       # better ls
