@@ -48,8 +48,14 @@ let
     # yq wraps around jq to do yaml, the go version is better
     yq-go #yq-go is the golang version, yq is the python version, they have different syntaxes
 
-    # front end stuff, a better npm also includes pnpx
-    pnpm
+    # front end stuff
+    bun # a better node runtime
+    pnpm # a better npm also includes pnpx
+
+    #music
+    lilypond
+    # frescobaldi
+
 
     # purescript stuff, might need to go if I can't get it to work properly
     # purescript
@@ -124,6 +130,13 @@ let
 
 in
 {
+
+  # TODO fix this later, maybe update versions or find a better way or remove whatever depends on electron
+  # silence the electron insecure bullshit for now
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-36.9.5"
+  ];
+
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "fg";
@@ -188,8 +201,8 @@ in
     # R_LIBS_USER = "${pkgs.rPackages}/library";
     # R_LIBS_SITE = "${pkgs.rPackages}/library";
     # EDITOR = "emacs";
-    EDITOR = "codium";
-    TERMINAL = "rio";
+    EDITOR = "code --wait";
+    TERMINAL = "iterm2";
     SHELL = "zsh";
 
     # mojo stuff
@@ -310,6 +323,8 @@ programs.vscode = {
   #shells, bash and fish
   programs.bash.enable = true;
 
+  programs.bun.enable = true;
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -320,16 +335,16 @@ programs.vscode = {
     historySubstringSearch.enable = true;
 
     # TODO remove Conda stuff after I make sure I don't need it anymore
-    initContent = ''
-      # Conda initialization for zsh
-      if [ -f "${condaBase}/etc/profile.d/conda.sh" ]; then
-        source "${condaBase}/etc/profile.d/conda.sh"
-      else
-        export PATH="${condaBase}/bin:$PATH"
-      fi
-      # Homebrew initialization
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    '';
+    # initContent = ''
+    #   # Conda initialization for zsh
+    #   if [ -f "${condaBase}/etc/profile.d/conda.sh" ]; then
+    #     source "${condaBase}/etc/profile.d/conda.sh"
+    #   else
+    #     export PATH="${condaBase}/bin:$PATH"
+    #   fi
+    #   # Homebrew initialization
+    #   eval "$(/opt/homebrew/bin/brew shellenv)"
+    # '';
 
     shellAliases = {
       # better ls
@@ -337,8 +352,9 @@ programs.vscode = {
       la = "eza -a";
       l = "eza";
       # home manager shortcuts
-      hm = "home-manager switch --flake ~/.config/home-manager#fg";
-      hmu = " nix flake update && home-manager switch --flake ~/.config/home-manager#fg";
+      hm = "home-manager switch --flake ~/.config/home-manager#fg"; # daily workhorse
+      hmu = " nix flake update && home-manager switch --flake ~/.config/home-manager#fg"; # update flake and apply
+      hmb = "home-manager build --flake ~/.config/home-manager#fg"; # dry run to see changes without applying
     };
 
   };
