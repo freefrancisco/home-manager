@@ -22,8 +22,10 @@ home-manager switch --flake .#fg      # apply the flake config
 note that the .#fg assumes we are in the directory, for the more general we have to specify it, as seen in the shell extensions defined in home.nix
 ```
       # home manager shortcuts
-      hm = "home-manager switch --flake ~/.config/home-manager#fg";
-      hmu = " nix flake update && home-manager switch --flake ~/.config/home-manager#fg";
+      hm = "home-manager switch --flake ~/.config/home-manager#fg"; # daily workhorse
+      hmu = " nix flake update && home-manager switch --flake ~/.config/home-manager#fg"; # update flake and apply
+      hmb = "home-manager build --flake ~/.config/home-manager#fg"; # dry run to see changes without applying
+
 ```
 So now just use `hm` to do a `home-manager switch` with the right flags,
 because doing it without them apparently doesn't use the flake, but rather whatever is in the system, which is not what I want for repeatability.
