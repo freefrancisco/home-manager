@@ -11,6 +11,12 @@ let
     # servers and related
     caddy
 
+    # llms and related
+    codex # openai codex cli tool
+    claude-code # anthropic claude cli tool
+    ollama # local llm manager
+
+
     # haskell related
     ihp-new
     cachix
@@ -19,6 +25,7 @@ let
 
     # python related
     pixi # better conda
+    uv   # better pip, also includes uvx for running python scripts with isolated environments
 
     # R related
     R
@@ -132,6 +139,12 @@ let
 
 in
 {
+
+  # TODO maybe don't manage unfree packages from nix, but have it there fur now
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (pkgs.lib.getName pkg) [
+             "claude-code"
+           ];
 
   # TODO fix this later, maybe update versions or find a better way or remove whatever depends on electron
   # silence the electron insecure bullshit for now
