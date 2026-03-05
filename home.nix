@@ -59,6 +59,10 @@ let
     bun # a better node runtime
     pnpm # a better npm also includes pnpx
 
+    # agda stuff
+    agda
+    agdaPackages.standard-library
+
     #music
     lilypond
     # frescobaldi
@@ -122,6 +126,10 @@ let
   #rust stuff
   cargoHome = "${config.home.homeDirectory}/.cargo";
   cargoPath = "${cargoHome}/bin";
+
+  #agda stuff
+  agdaHome = "${config.home.homeDirectory}/.agda";
+  agdaStdLib = "${pkgs.agdaPackages.standard-library}/standard-library.agda-lib";
 
   #lean stuff
   elanHome = "${config.home.homeDirectory}/.elan";
@@ -196,6 +204,13 @@ in
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+
+    ".agda/libraries".text = ''
+      ${agdaStdLib}
+    '';
+    ".agda/defaults".text = ''
+      standard-library
+    '';
   };
 
   # Home Manager can also manage your environment variables through
@@ -223,7 +238,10 @@ in
     SHELL = "zsh";
 
     # mojo stuff
-    MODULAR_HOME = modularHome;
+    MODULAR_HOME = "${modularHome}";
+
+    # agda stuff
+    AGDA_DIR = "${agdaHome}";
 
     # Homewbrew stuff
     HOMEBREW_PREFIX="${homebrewBase}";
